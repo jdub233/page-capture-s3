@@ -1,0 +1,12 @@
+{
+  "name": "bu-page-capture-s3",
+  "version": "0.0.1",
+  "description": "Capture a page an associated assets and push it to object storage",
+  "main": "index.js",
+  "author": "jaydub@bu.edu",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.0.0",
+    "website-scraper": "^4.0.1"
+  }
+}
