@@ -4,10 +4,12 @@ const fs = require('fs-extra');
 
 require('dotenv').config();
 
+const captureURL = new URL(process.env.CAPTURE_URL);
+
 const scrapeOptions = {
     urls: [process.env.CAPTURE_URL],
     urlFilter: function(url) {
-        return url.indexOf(process.env.CAPTURE_URL) === 0;
+        return url.indexOf(`${captureURL.protocol}//${captureURL.host}`) === 0;
     },
     directory: './data/page/',
 };
