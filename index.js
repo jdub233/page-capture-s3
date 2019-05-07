@@ -6,6 +6,9 @@ require('dotenv').config();
 
 const scrapeOptions = {
     urls: [process.env.CAPTURE_URL],
+    urlFilter: function(url) {
+        return url.indexOf(process.env.CAPTURE_URL) === 0;
+    },
     directory: './data/page/',
 };
 
