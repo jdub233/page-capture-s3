@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "jaydub@bu.edu",
   "license": "MIT",
+  "scripts": {
+    "local": "sls invoke local --function capture",
+    "log": "sls logs --function capture"
+  },
   "dependencies": {
     "del": "^4.1.1",
     "s3-node-client": "^4.4.4",
