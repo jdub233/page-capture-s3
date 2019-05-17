@@ -1,4 +1,4 @@
-service: bu-wp-page-capture
+service: bu-page-capture
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
