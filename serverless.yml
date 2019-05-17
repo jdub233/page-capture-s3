@@ -1,0 +1,29 @@
+service: bu-wp-page-capture
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+        - "s3:*Object"
+      Resource: "arn:aws:s3:::${file(config.yml):S3_BUCKET_NAME}*"
+
+functions:
+  capture:
+    handler: handler.endpoint
+    #maximum processing time for API Gateway invocation is 30 seconds
+    timeout: 30
+    environment:
+        CAPTURE_URL: ${file(config.yml):CAPTURE_URL}
+        S3_BUCKET_NAME: ${file(config.yml):S3_BUCKET_NAME}
+        S3_PATH: ${file(config.yml):S3_PATH}
+    events:
+      - http:
+          path: ping
+          method: get
