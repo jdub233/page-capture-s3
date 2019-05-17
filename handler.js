@@ -1,23 +1,22 @@
 const scrape = require('website-scraper');
 const s3 = require('s3-node-client');
-const fs = require('fs-extra');
+const del = require('del');
+const Url = require('url-parse');
 
-require('dotenv').config();
-
-const captureURL = new URL(process.env.CAPTURE_URL);
+const captureURL = new Url(process.env.CAPTURE_URL);
 
 const scrapeOptions = {
-    urls: [process.env.CAPTURE_URL],
+    urls: [`${process.env.CAPTURE_URL}?cachebust=${Date.now()}`],
     urlFilter: function(url) {
         return url.indexOf(`${captureURL.protocol}//${captureURL.host}`) === 0;
     },
-    directory: './data/page/',
+    directory: `/tmp/page-capture/capture-${Date.now()}`,
 };
 
 const client = s3.createClient();
 
 const uploadParams = {
-    localDir: 'data/page',
+    localDir: scrapeOptions.directory,
     deleteRemoved: false,
     s3Params: {
         Bucket: process.env.S3_BUCKET_NAME,
@@ -25,9 +24,10 @@ const uploadParams = {
     },
 };
 
-(async () => {
+module.exports.endpoint = async (event, context, callback) => {
+
     const result = await scrape(scrapeOptions);
-    console.log('capture complete');
+
     if (result[0].saved) {
         //If successful, upload files
         console.log('uploading');
@@ -35,17 +35,27 @@ const uploadParams = {
 
         uploader.on('error', function(err) {
             console.error("unable to sync:", err.stack);
+            console.log(`Bucket was: ${process.env.S3_BUCKET_NAME} and prefix was ${process.env.S3_PATH} `);
         });
         uploader.on('end', function() {
-            console.log("done uploading, removing local files");
-            fs.remove('./data/page/', err =>{
-                if (err) {
-                    return console.error(err);
-                }
-                console.log('success, local files removed');
-            });
+            console.log("done uploading, deleting local files");
+
+            (async () => {
+                deletedPaths = await del(['/tmp/page-capture/*'], {force: true});
+                console.log('deleted temp files at: ', deletedPaths);
+            })();
 
         });
     };
 
-})();
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: `Capture status was ${result[0].saved}, run at ${new Date().toTimeString()}, AWS Request ID was ${context.awsRequestId}`,
+        }),
+    };
+
+  callback(null, response);
+};
+
+
