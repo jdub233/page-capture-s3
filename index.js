@@ -18,7 +18,7 @@ const client = s3.createClient();
 
 const uploadParams = {
     localDir: 'data/page',
-    deleteRemoved: true,
+    deleteRemoved: false,
     s3Params: {
         Bucket: process.env.S3_BUCKET_NAME,
         Prefix: process.env.S3_PATH,
