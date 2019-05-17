@@ -57,5 +57,3 @@ module.exports.endpoint = async (event, context, callback) => {
 
   callback(null, response);
 };
-
-
