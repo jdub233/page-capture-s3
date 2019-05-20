@@ -13,6 +13,15 @@ provider:
         - "s3:ListBucket"
         - "s3:*Object"
       Resource: "arn:aws:s3:::${file(config.yml):S3_BUCKET_NAME}*"
+  apiKeys:
+    - capturePingKey
+  usagePlan:
+    quota: 
+      limit: 1500
+      period: MONTH
+    throttle:
+      burstLimit: 1
+      rateLimit: 1
 
 functions:
   capture:
@@ -27,3 +36,4 @@ functions:
       - http:
           path: ping
           method: get
+          private: true
