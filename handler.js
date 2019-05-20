@@ -51,7 +51,7 @@ module.exports.endpoint = async (event, context, callback) => {
     const response = {
         statusCode: 200,
         body: JSON.stringify({
-            message: `Capture status was ${result[0].saved}, run at ${new Date().toTimeString()}, AWS Request ID was ${context.awsRequestId}`,
+            message: `Capture status was ${result[0].saved}, run at ${new Date().toString()}, AWS Request ID was ${context.awsRequestId}`,
         }),
     };
 
