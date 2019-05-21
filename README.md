@@ -51,6 +51,16 @@ For example:
 curl --header "x-api-key: <key>" https://<gateway url>
 ```
 
+Here is a PHP example using the `wp_remote_get()` inside WordPress:
+
+```php
+$api_key = '<key>';
+$api_url = '<gateway url>';
+
+$response = wp_remote_get( $api_url, array( 'timeout' => 30, 'headers' => array( 'x-api-key' => $api_key, ) ) );
+```
+
+
 ## How to monitor
 
 CloudWatch logs are provisioned along with the Lambda.  A console link to the CloudWatch events is available in the Resources tab of the CloudFormation stack.  Recent logs are also available through the serverless cli like this:
