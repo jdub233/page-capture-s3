@@ -51,7 +51,7 @@ For example:
 curl --header "x-api-key: <key>" https://<gateway url>
 ```
 
-Here is a PHP example using the `wp_remote_get()` inside WordPress:
+Here is a PHP example using the `wp_remote_get()` function inside WordPress:
 
 ```php
 $api_key = '<key>';
