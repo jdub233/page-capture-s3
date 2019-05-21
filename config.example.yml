@@ -1,0 +1,5 @@
+CAPTURE_URL: "https://www.bu.edu"
+
+#S3 Bucket details
+S3_BUCKET_NAME: "static-page-bucket"
+S3_PATH: "page"

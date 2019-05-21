@@ -5,10 +5,14 @@
   "main": "index.js",
   "author": "jaydub@bu.edu",
   "license": "MIT",
+  "scripts": {
+    "local": "sls invoke local --function capture",
+    "log": "sls logs --function capture"
+  },
   "dependencies": {
-    "dotenv": "^8.0.0",
-    "fs-extra": "^7.0.1",
+    "del": "^4.1.1",
     "s3-node-client": "^4.4.4",
+    "url-parse": "^1.4.7",
     "website-scraper": "^4.0.1"
   }
 }
