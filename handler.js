@@ -35,7 +35,7 @@ module.exports.endpoint = async (event, context, callback) => {
 
     if (result[0].saved) {
         //If successful, upload files
-        console.log('uploading');
+        console.log('capture successful, now uploading to S3');
         const uploader = client.uploadDir(uploadParams);
 
         uploader.on('error', function(err) {
