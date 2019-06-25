@@ -12,7 +12,7 @@ const scrapeOptions = {
     },
     directory: `/tmp/page-capture/capture-${Date.now()}`,
     subdirectories: [
-        {directory: 'img', extensions: ['.jpg', '.png', '.svg', '.mp4', '.webm', '.mov']},
+        {directory: 'img', extensions: ['.jpg', '.png', '.svg', '.gif', '.mp4', '.webm', '.mov']},
         {directory: 'js', extensions: ['.js']},
         {directory: 'css', extensions: ['.css']}
     ],
