@@ -11,6 +11,11 @@ const scrapeOptions = {
         return url.indexOf(`${captureURL.protocol}//${captureURL.host}`) === 0;
     },
     directory: `/tmp/page-capture/capture-${Date.now()}`,
+    subdirectories: [
+        {directory: 'img', extensions: ['.jpg', '.png', '.svg', '.mp4', '.webm', '.mov']},
+        {directory: 'js', extensions: ['.js']},
+        {directory: 'css', extensions: ['.css']}
+    ],
 };
 
 const client = s3.createClient();
