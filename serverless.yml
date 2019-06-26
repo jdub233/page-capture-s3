@@ -32,12 +32,13 @@ functions:
         CAPTURE_URL: ${file(config.yml):CAPTURE_URL}
         S3_BUCKET_NAME: ${file(config.yml):S3_BUCKET_NAME}
         S3_PATH: ${file(config.yml):S3_PATH}
+        SUBDIR_PREFIX: ${file(config.yml):SUBDIR_PREFIX}
+
     events:
       - http:
           path: ping
           method: get
           private: true
       - schedule:
-          name: page-capture-schedule
           rate: rate(1 hour)
           enabled: false
