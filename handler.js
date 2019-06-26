@@ -5,6 +5,9 @@ const Url = require('url-parse');
 
 const captureURL = new Url(process.env.CAPTURE_URL);
 
+// Allow for a prefix to the subdirectory, and add a slash if it is set.
+const subDirPrefix = (process.env.SUBDIR_PREFIX !== '') ? `${process.env.SUBDIR_PREFIX}/` : '';
+
 const scrapeOptions = {
     urls: [`${process.env.CAPTURE_URL}?cachebust=${Date.now()}`],
     urlFilter: function(url) {
@@ -12,9 +15,9 @@ const scrapeOptions = {
     },
     directory: `/tmp/page-capture/capture-${Date.now()}`,
     subdirectories: [
-        {directory: 'img', extensions: ['.jpg', '.png', '.svg', '.gif', '.mp4', '.webm', '.mov']},
-        {directory: 'js', extensions: ['.js']},
-        {directory: 'css', extensions: ['.css']}
+        {directory: `${subDirPrefix}img`, extensions: ['.jpg', '.png', '.svg', '.gif', '.mp4', '.webm', '.mov']},
+        {directory: `${subDirPrefix}js`, extensions: ['.js']},
+        {directory: `${subDirPrefix}css`, extensions: ['.css']}
     ],
 };
 
