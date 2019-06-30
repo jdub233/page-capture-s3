@@ -17,7 +17,8 @@ const scrapeOptions = {
     subdirectories: [
         {directory: `${subDirPrefix}img`, extensions: ['.jpg', '.png', '.svg', '.gif', '.mp4', '.webm', '.mov']},
         {directory: `${subDirPrefix}js`, extensions: ['.js']},
-        {directory: `${subDirPrefix}css`, extensions: ['.css']}
+        {directory: `${subDirPrefix}css`, extensions: ['.css']},
+        {directory: `${subDirPrefix}font`, extensions: ['.woff', '.woff2', '.ttf', '.eot']},
     ],
 };
 
