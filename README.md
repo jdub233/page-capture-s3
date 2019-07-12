@@ -10,10 +10,12 @@ The lambda is triggered by a secure API gateway interface using an API key.
 
 ## How to configure
 
-The capture URL, S3 bucket name, and S3 bucket path are configurable by setting values in a `config.yml` file.
+The capture URL, S3 bucket name, and S3 bucket path are configurable by setting values in a `config.yml` file.  Also, the captured assets can be stored in a separate subdirectory, if one is specified in the config.
 
-- `CAPTURE_URL` sets the URL to the page to be captured
-- `S3_BUCKET_NAME` and `S3_PATH` set the S3 destination for the captured static files
+- `CAPTURE_URL` sets the URL to the page to be captured.
+- `S3_BUCKET_NAME` sets the destination S3 bucket for the captured static files.
+- `S3_PATH` sets a path within the bucket for the capture directory.  If blank, the root of the bucket will be used.
+- `SUBDIR_PREFIX` sets the name of the sub-directory used to store the assets (use the directory name only, no trailing slash).  If blank, assets will be stored at the root.
 
 When installing the Lambda, copy the `config.example.yml` to a `config.yml` file and customize the values.  Once installed, they are also available as environment variables in the running Lambda and can be further adjusted from there.
 
