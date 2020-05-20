@@ -3,6 +3,8 @@ const s3 = require('s3-node-client');
 const del = require('del');
 const Url = require('url-parse');
 
+const ValidatePlugin = require('./validatePlugin');
+
 const captureURL = new Url(process.env.CAPTURE_URL);
 
 // Allow for a prefix to the subdirectory, and add a slash if it is set.
@@ -20,6 +22,7 @@ const scrapeOptions = {
         {directory: `${subDirPrefix}css`, extensions: ['.css']},
         {directory: `${subDirPrefix}font`, extensions: ['.woff', '.woff2', '.ttf', '.eot']},
     ],
+    plugins: [ new ValidatePlugin() ],
 };
 
 const client = s3.createClient();
