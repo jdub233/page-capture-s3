@@ -1,6 +1,6 @@
 {
   "name": "bu-page-capture-s3",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Capture a page an associated assets and push it to object storage",
   "main": "index.js",
   "author": "jaydub@bu.edu",
