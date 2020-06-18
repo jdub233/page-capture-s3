@@ -8,6 +8,8 @@ For example, capturing the home page at `www.bu.edu` will also pull in and relin
 
 The lambda is triggered by a secure API gateway interface using an API key.
 
+The function includes error checking, and will cancel downloads on any assets that do not return a status code 200 (OK).  If the root page capture fails, the entire capture is cancelled and no changes will be made to the current contents of the S3 bucket.
+
 ## How to configure
 
 The capture URL, S3 bucket name, and S3 bucket path are configurable by setting values in a `config.yml` file.  Also, the captured assets can be stored in a separate subdirectory, if one is specified in the config.
