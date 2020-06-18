@@ -1,6 +1,6 @@
 {
   "name": "bu-page-capture-s3",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Capture a page an associated assets and push it to object storage",
   "main": "index.js",
   "author": "jaydub@bu.edu",
@@ -10,7 +10,7 @@
     "log": "sls logs --function capture"
   },
   "dependencies": {
-    "del": "^4.1.1",
+    "del": "^5.1.0",
     "s3-node-client": "^4.4.4",
     "url-parse": "^1.4.7",
     "website-scraper": "^4.0.1"
