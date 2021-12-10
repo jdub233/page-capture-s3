@@ -1,3 +1,7 @@
+/**
+ * A Lambda function that captures a given page as static files, and uploads the files to S3.
+ */
+
 const scrape = require('website-scraper');
 const s3 = require('s3-node-client');
 const del = require('del');
@@ -10,33 +14,33 @@ const captureURL = new Url(process.env.CAPTURE_URL);
 // Allow for a prefix to the subdirectory, and add a slash if it is set.
 const subDirPrefix = (process.env.SUBDIR_PREFIX !== '') ? `${process.env.SUBDIR_PREFIX}/` : '';
 
-const scrapeOptions = {
-    urls: [`${process.env.CAPTURE_URL}?cachebust=${Date.now()}`],
-    urlFilter: function(url) {
-        return url.indexOf(`${captureURL.protocol}//${captureURL.host}`) === 0;
-    },
-    directory: `/tmp/page-capture/capture-${Date.now()}`,
-    subdirectories: [
-        {directory: `${subDirPrefix}img`, extensions: ['.jpg', '.png', '.svg', '.gif', '.mp4', '.webm', '.mov']},
-        {directory: `${subDirPrefix}js`, extensions: ['.js']},
-        {directory: `${subDirPrefix}css`, extensions: ['.css']},
-        {directory: `${subDirPrefix}font`, extensions: ['.woff', '.woff2', '.ttf', '.eot']},
-    ],
-    plugins: [ new ValidatePlugin() ],
-};
-
 const client = s3.createClient();
 
-const uploadParams = {
-    localDir: scrapeOptions.directory,
-    deleteRemoved: false,
-    s3Params: {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Prefix: process.env.S3_PATH,
-    },
-};
+exports.pageCapture = async (event, context, callback) => {
 
-module.exports.endpoint = async (event, context, callback) => {
+    const scrapeOptions = {
+        urls: [`${process.env.CAPTURE_URL}?cachebust=${Date.now()}`],
+        urlFilter: function(url) {
+            return url.indexOf(`${captureURL.protocol}//${captureURL.host}`) === 0;
+        },
+        directory: `/tmp/page-capture/capture-${Date.now()}`,
+        subdirectories: [
+            {directory: `${subDirPrefix}img`, extensions: ['.jpg', '.png', '.svg', '.gif', '.mp4', '.webm', '.mov']},
+            {directory: `${subDirPrefix}js`, extensions: ['.js']},
+            {directory: `${subDirPrefix}css`, extensions: ['.css']},
+            {directory: `${subDirPrefix}font`, extensions: ['.woff', '.woff2', '.ttf', '.eot']},
+        ],
+        plugins: [ new ValidatePlugin() ],
+    };
+
+    const uploadParams = {
+        localDir: scrapeOptions.directory,
+        deleteRemoved: false,
+        s3Params: {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Prefix: process.env.S3_PATH,
+        },
+    };
 
     const result = await scrape(scrapeOptions);
 
@@ -60,12 +64,8 @@ module.exports.endpoint = async (event, context, callback) => {
         });
     };
 
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify({
-            message: `Capture status was ${result[0].saved}, run at ${new Date().toString()}, AWS Request ID was ${context.awsRequestId}`,
-        }),
-    };
+    const response = `Capture status was ${result[0].saved}, queue id was ${messageId}`;
+    console.info(response);
 
-  callback(null, response);
-};
+    callback(null, response);
+}
