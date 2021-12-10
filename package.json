@@ -9,9 +9,9 @@
     "log": "sls logs --function capture"
   },
   "dependencies": {
-    "del": "^5.1.0",
+    "del": "^6.0.0",
     "s3-node-client": "^4.4.4",
-    "url-parse": "^1.4.7",
-    "website-scraper": "^4.0.1"
+    "url-parse": "^1.5.3",
+    "website-scraper": "^4.2.3"
   }
 }
