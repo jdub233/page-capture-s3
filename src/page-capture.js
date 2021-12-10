@@ -3,7 +3,7 @@ const s3 = require('s3-node-client');
 const del = require('del');
 const Url = require('url-parse');
 
-const ValidatePlugin = require('./validatePlugin');
+const ValidatePlugin = require('./page-capture/validatePlugin');
 
 const captureURL = new Url(process.env.CAPTURE_URL);
 
