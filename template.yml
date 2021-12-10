@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  page-capture-s3
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Parameters:
+  CaptureUrl:
+    Type: String
+    Description: URL of page to capture
+    Default: https://www.bu.edu
+  SubdirPrefix:
+    Type: String
+    Description: Prefix of the S3 location (optional)
+    Default: home
+  S3BucketName:
+    Type: String
+    Description: Name of the S3 bucket to deploy captured files
+    Default: bu-static-page-bucket
+  S3Path:
+    Type: String
+    Description: Path within the S3 bucket for deployed files
+    Default: page
+
+Resources:
+  # SQS Queue to buffer page capture requests from the API Gateway.
+  # Page captures can be long running jobs, and require a queue to receive and process API Gateway requests within their 30 second timeout.
+  CaptureQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 230 # Set a high visibility timeout to give page captures at least a minute or so to complete
+  
+  PageCaptureFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Lambda function to run the page capture and upload to S3. Runs when a request comes into the Capture Queue.
+      Runtime: nodejs14.x
+      Handler: src/page-capture.pageCapture
+      Environment:
+        Variables:
+          CAPTURE_URL: !Ref CaptureUrl
+          SUBDIR_PREFIX: !Ref SubdirPrefix
+          S3_BUCKET_NAME: !Ref S3BucketName
+          S3_PATH: !Ref S3Path
+      # This property associates this Lambda function with the SQS queue defined above, so that whenever the queue
+      # receives a message, the Lambda function is invoked
+      Events:
+        SQSQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt CaptureQueue.Arn
+            BatchSize: 1
+      MemorySize: 512
+      Timeout: 200 # must be within the SQS Visibility Timeout
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketName
+
+  # API Gateway endpoint secured with an API Key.  Anyone with the URL and API key can request new page captures.
+  TriggerEndpoint:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        ApiKeyRequired: true
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          UsagePlanName: GatewayAuthorization
+          # Add an upper bound to monthly invocations just in case.
+          Quota:
+            Limit: 1000
+            Period: MONTH
+
+  # Simple Lambda function that relays requests from the API Gateway endpoint to SQS
+  TriggerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Trigger to pass the API gateway event into SQS
+      Runtime: nodejs14.x
+      Handler: src/trigger.captureTriggerHandler
+      Policies:
+        SQSSendMessagePolicy: 
+          QueueName: !GetAtt CaptureQueue.QueueName
+      Environment:
+        Variables:
+          SQSqueueName: !Ref CaptureQueue
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: TriggerEndpoint
+            Path: /
+            Method: get
+
+Outputs:
+  ApiGateway:
+    Description: "The trigger URL is:"
+    Value: !Sub "https://${TriggerEndpoint}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  ApiKey:
+    Description: "You can find your API Key in the AWS console: (Put in the request HEADER as 'x-api-key')"
+    Value: !Sub "https://console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/api-keys/${TriggerEndpointApiKey}"
+
