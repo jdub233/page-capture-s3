@@ -17,6 +17,9 @@ const subDirPrefix = (process.env.SUBDIR_PREFIX !== '') ? `${process.env.SUBDIR_
 const client = s3.createClient();
 
 exports.pageCapture = async (event, context, callback) => {
+    // Parse the queue event.
+    const { Records: [ message, ...rest ] } = event;
+    const { messageId, body } = message;
 
     const scrapeOptions = {
         urls: [`${process.env.CAPTURE_URL}?cachebust=${Date.now()}`],
