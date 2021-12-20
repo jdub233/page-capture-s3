@@ -28,4 +28,3 @@
          body: JSON.stringify({ result: 'capture job queued', messageID: result.MessageId })
      };
  }
- 
