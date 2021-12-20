@@ -43,14 +43,21 @@ Resources:
           SUBDIR_PREFIX: !Ref SubdirPrefix
           S3_BUCKET_NAME: !Ref S3BucketName
           S3_PATH: !Ref S3Path
-      # This property associates this Lambda function with the SQS queue defined above, so that whenever the queue
-      # receives a message, the Lambda function is invoked
       Events:
+        # This property associates this Lambda function with the SQS queue defined above, so that whenever the queue
+        # receives a message, the Lambda function is invoked
         SQSQueueEvent:
           Type: SQS
           Properties:
             Queue: !GetAtt CaptureQueue.Arn
             BatchSize: 1
+        # This event defines an hourly CloudWatch schedule
+        CaptureHourlySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: 'rate(1 hour)'
+            Description: Runs a capture every hour once enabled
+            Enabled: false
       MemorySize: 512
       Timeout: 200 # must be within the SQS Visibility Timeout
       Policies:
