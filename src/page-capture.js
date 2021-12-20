@@ -17,9 +17,21 @@ const subDirPrefix = (process.env.SUBDIR_PREFIX !== '') ? `${process.env.SUBDIR_
 const client = s3.createClient();
 
 exports.pageCapture = async (event, context, callback) => {
-    // Parse the queue event.
-    const { Records: [ message, ...rest ] } = event;
-    const { messageId, body } = message;
+    // Track the event source for logging purposes
+    let eventMessage = '';
+
+    // For SQS triggers, grab the message ID
+    if ( event.Records ) {
+        // Parse SQS the queue event.
+        const { Records: [ message, ...rest ] } = event;
+        const { messageId } = message;
+        eventMessage = `SQS message id was ${messageId}`
+    }
+    
+    // Scheduled events can be detected by the event.source
+    if ( event.source === "aws.events" ) {
+        eventMessage = "Triggered by a schedule"
+    }
 
     const scrapeOptions = {
         urls: [`${process.env.CAPTURE_URL}?cachebust=${Date.now()}`],
@@ -67,7 +79,7 @@ exports.pageCapture = async (event, context, callback) => {
         });
     };
 
-    const response = `Capture status was ${result[0].saved}, queue id was ${messageId}`;
+    const response = `Capture status was ${result[0].saved}, ${eventMessage}`;
     console.info(response);
 
     callback(null, response);
