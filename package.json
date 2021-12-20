@@ -5,8 +5,8 @@
   "author": "jaydub@bu.edu",
   "license": "MIT",
   "scripts": {
-    "local": "sls invoke local --function capture",
-    "log": "sls logs --function capture"
+    "local:schedule": "sam local generate-event cloudwatch scheduled-event | sam local invoke -e - PageCaptureFunction",
+    "local:sqs": "sam local generate-event sqs receive-message | sam local invoke -e - PageCaptureFunction"
   },
   "dependencies": {
     "del": "^6.0.0",
