@@ -10,10 +10,6 @@ Parameters:
     Type: String
     Description: URL of page to capture
     Default: https://www.bu.edu
-  SubdirPrefix:
-    Type: String
-    Description: Prefix of the S3 location (optional)
-    Default: home
   S3BucketName:
     Type: String
     Description: Name of the S3 bucket to deploy captured files
@@ -22,6 +18,10 @@ Parameters:
     Type: String
     Description: Path within the S3 bucket for deployed files
     Default: page
+  SubdirPrefix:
+    Type: String
+    Description: Prefix of the S3 location (optional)
+    Default: home
 
 Resources:
   # SQS Queue to buffer page capture requests from the API Gateway.
@@ -40,9 +40,9 @@ Resources:
       Environment:
         Variables:
           CAPTURE_URL: !Ref CaptureUrl
-          SUBDIR_PREFIX: !Ref SubdirPrefix
           S3_BUCKET_NAME: !Ref S3BucketName
           S3_PATH: !Ref S3Path
+          SUBDIR_PREFIX: !Ref SubdirPrefix
       Events:
         # This property associates this Lambda function with the SQS queue defined above, so that whenever the queue
         # receives a message, the Lambda function is invoked
