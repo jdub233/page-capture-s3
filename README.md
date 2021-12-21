@@ -6,44 +6,47 @@ A NodeJS Lambda that can capture a single HTML page and all of the associated fi
 
 For example, capturing the home page at `www.bu.edu` will also pull in and relink associated images, css, js, etc. that are served from the `www.bu.edu/` domain.  External links will be left as.
 
-The lambda is triggered by a secure API gateway interface using an API key.
+The lambda is triggered by a secure API gateway interface using an API key.  API Gateway requests have a 30 second time limit, so the API Gateway feeds a "trigger" lambda that passes the request to an SQS queue.  This allows the API Gateway request to answer quickly while the capture lambda is triggered by the longer-running SQS service.
 
 The function includes error checking, and will cancel downloads on any assets that do not return a status code 200 (OK).  If the root page capture fails, the entire capture is cancelled and no changes will be made to the current contents of the S3 bucket.
 
+There is also a schedule event defined that will run the capture lambda every hour.  It is not enabled by default.
+
 ## How to configure
 
-The capture URL, S3 bucket name, and S3 bucket path are configurable by setting values in a `config.yml` file.  Also, the captured assets can be stored in a separate subdirectory, if one is specified in the config.
+The capture URL, S3 bucket name, and S3 bucket path are defined as configurable parameters in the infrastructure template.  Also, the captured assets can be stored in a separate subdirectory, if one is specified in the config.
 
-- `CAPTURE_URL` sets the URL to the page to be captured.
-- `S3_BUCKET_NAME` sets the destination S3 bucket for the captured static files.
-- `S3_PATH` sets a path within the bucket for the capture directory.  If blank, the root of the bucket will be used.
-- `SUBDIR_PREFIX` sets the name of the sub-directory used to store the assets (use the directory name only, no trailing slash).  If blank, assets will be stored at the root.
+- `CaptureUrl` sets the URL to the page to be captured.
+- `S3BucketName` sets the destination S3 bucket for the captured static files.
+- `S3Path` sets a path within the bucket for the capture directory.  If blank, the root of the bucket will be used.
+- `SubdirPrefix` sets the name of the sub-directory used to store the assets (use the directory name only, no trailing slash).  If blank, assets will be stored at the root.
 
-When installing the Lambda, copy the `config.example.yml` to a `config.yml` file and customize the values.  Once installed, they are also available as environment variables in the running Lambda and can be further adjusted from there.
+These parameters are passed as environment variables to the capture lambda.
 
 ## How to install
 
-Page Capture S3 uses the [serverless framework](https://serverless.com/framework/) to manage the API gateway and Lambda infrastrucure components.  It assumes an existing S3 bucket for the static files.
+Page Capture S3 uses the [AWS SAM frramework](https://aws.amazon.com/serverless/sam/) to manage the API gateway and Lambda infrastrucure components.  It assumes an existing S3 bucket for the static files (named `S3BucketName` in the template parameters).
 
-First install or update [the serverless CLI tool](https://serverless.com/framework/docs/getting-started/), which can generally be done using npm like this:
+The [SAM CLI tool is available for various platforms](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html), and can be installed for macOS with homebrew like so:
 
 ```bash
-npm install -g serverless
+brew tap aws/tap
+brew install aws-sam-cli
 ```
 
 Also there must be existing AWS cli credentials for the account where the Lambda will be installed (generally `aws config`).
 
-Once the serverless cli is installed, the Lambda infrastructure can be provisioned on AWS using the `deploy` command:
+Once the SAM cli is installed, the Lambda infrastructure can be provisioned on AWS using the `deploy` command:
 
 ```bash
-serverless deploy
+sam build
+sam deploy --guided
 ```
 
-This will package the Lambda code, compile the `serverless.yml` infrastructure directives to a CloudFormation template, and install a CloudFormation stack in AWS.  The deploy command will also return the following values:
+This will compile the Lambda and template code and launch a guided SAM deploy, prompting for template parameters a and Cloudformation stack name. SAM will then execute the compiled Cloudformation directives and return the following outputs:
 
-- the stack name in CloudFormation
-- an API key named `capturePingKey`: this is necessary to trigger the private API gateway
-- an endpoint URL for the API gateway: together with the API key, this can be used to trigger the capture Lambda
+- an endpoint URL for the API gateway: together with the API key, this can be used to trigger the capture Lambda through the SQS queue
+- a link to the API key that secures the private API gateway
 
 ## How to trigger
 
@@ -66,40 +69,34 @@ $response = wp_remote_get( $api_url, array( 'timeout' => 30, 'headers' => array(
 
 ## How to monitor
 
-CloudWatch logs are provisioned along with the Lambda.  A console link to the CloudWatch events is available in the Resources tab of the CloudFormation stack.  Recent logs are also available through the serverless cli like this:
+CloudWatch logs are provisioned along with the Lambda.  A console link to the CloudWatch events is available in the Resources tab of the CloudFormation stack.  Recent logs are also available through the SAM cli like this:
 
 ```bash
-serverless logs --function capture
-```
-
-This is also available through a yarn run command:
-
-```bash
-yarn log
+sam logs --stack-name <name of the deployed cloudformation stack>
 ```
 
 ## Local testing
 
-The capture Lambda can simulated locally by the serverless cli with this command:
+The capture Lambda can simulated locally using the `sam local` cli command.  There are npm scripts defined in the `package.json` scripts section to simulate the two different triggers for the capture lambda.
+
+To simulate the SQS trigger, run:
 
 ```bash
-serverless invoke local --function capture
+npm run local:sqs
 ```
 
-Or using the yarn run shortcut:
+To simulate the Eventbridge schedule trigger, run:
 
 ```bash
-yarn local
+npm run local:schedule
 ```
-
-The local testing simulation isn't perfect; specifically the upload callback doesn't seem to correctly fire, and the files in `/tmp/page-capture` are not correctly deleted.
 
 ## How to remove
 
 The Lambda and all of it's associated resources can be removed by deleting the CloudFormation stack.  The existing S3 bucket specified for the static assets will not be affected.
 
-The CloudFormation stack can also be removed using the serverless cli:
+The CloudFormation stack can also be removed using the sam cli:
 
 ```bash
-serverless remove
+sam  --stack-name <name of the deployed cloudformation stack>
 ```
