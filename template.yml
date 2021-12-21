@@ -109,4 +109,3 @@ Outputs:
   ApiKey:
     Description: "You can find your API Key in the AWS console: (Put in the request HEADER as 'x-api-key')"
     Value: !Sub "https://console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/api-keys/${TriggerEndpointApiKey}"
-
