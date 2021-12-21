@@ -1,6 +1,6 @@
 {
   "name": "page-capture-s3",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Capture a page an associated assets and push it to object storage",
   "author": "jaydub@bu.edu",
   "license": "MIT",
