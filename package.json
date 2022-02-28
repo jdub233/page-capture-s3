@@ -11,7 +11,7 @@
   "dependencies": {
     "del": "^6.0.0",
     "s3-node-client": "^4.4.4",
-    "url-parse": "^1.5.3",
+    "url-parse": "^1.5.8",
     "website-scraper": "^4.2.3"
   }
 }
