@@ -17,7 +17,6 @@ Parameters:
   S3Path:
     Type: String
     Description: Path within the S3 bucket for deployed files
-    Default: page
   SubdirPrefix:
     Type: String
     Description: Prefix of the S3 location (optional)
