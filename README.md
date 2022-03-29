@@ -98,7 +98,7 @@ The Lambda and all of it's associated resources can be removed by deleting the C
 The CloudFormation stack can also be removed using the sam cli:
 
 ```bash
-sam  --stack-name <name of the deployed cloudformation stack>
+sam delete  --stack-name <name of the deployed cloudformation stack>
 ```
 
 ## BU Specific deploy parameters
