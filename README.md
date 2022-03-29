@@ -100,3 +100,19 @@ The CloudFormation stack can also be removed using the sam cli:
 ```bash
 sam  --stack-name <name of the deployed cloudformation stack>
 ```
+
+## BU Specific deploy parameters
+
+There is a `samconfig.toml` file that contains preset deploy parameters for use at BU.  There are `test` and `prod` stage profiles that can be used to update the existing deployments.
+
+From the webrouter non-prod account, the following command will deploy to the existing test setup:
+
+```bash
+sam deploy --config-file=samconfig.toml --config-env=test
+```
+
+From the webrouter prod account, this will deploy to the existing prod setup:
+
+```bash
+sam deploy --config-file=samconfig.toml --config-env=prod
+```

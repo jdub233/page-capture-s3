@@ -1,0 +1,24 @@
+version = 0.1
+[test]
+[test.deploy]
+[test.deploy.parameters]
+stack_name = "homepage-capture-s3-test"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-jdyonxtr76zc"
+s3_prefix = "homepage-capture-s3-test"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "CaptureUrl=\"https://www-test.bu.edu/homepage-alt/?is_buhp_scrape=true\" S3BucketName=\"buaws-websites-homepage-test\" S3Path=\"\" SubdirPrefix=\"home\""
+image_repositories = []
+
+[prod]
+[prod.deploy]
+[prod.deploy.parameters]
+stack_name = "homepage-capture-s3-prod"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-38xdmgxvov6s"
+s3_prefix = "homepage-capture-s3-prod"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "CaptureUrl=\"https://www.bu.edu/homepage-alt/?is_buhp_scrape=true\" S3BucketName=\"buaws-websites-homepage-prod\" S3Path=\"\" SubdirPrefix=\"home\""
+image_repositories = []
