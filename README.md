@@ -25,7 +25,7 @@ These parameters are passed as environment variables to the capture lambda.
 
 ## How to install
 
-Page Capture S3 uses the [AWS SAM frramework](https://aws.amazon.com/serverless/sam/) to manage the API gateway and Lambda infrastrucure components.  It assumes an existing S3 bucket for the static files (named `S3BucketName` in the template parameters).
+Page Capture S3 uses the [AWS SAM framework](https://aws.amazon.com/serverless/sam/) to manage the API gateway and Lambda infrastrucure components.  It assumes an existing S3 bucket for the static files (named `S3BucketName` in the template parameters).
 
 The [SAM CLI tool is available for various platforms](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html), and can be installed for macOS with homebrew like so:
 
